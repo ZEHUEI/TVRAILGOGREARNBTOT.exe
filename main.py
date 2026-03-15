@@ -11,8 +11,8 @@ ctypes.windll.shcore.SetProcessDpiAwareness(1)
 
 # --- CONFIGURATION ---
 SCAN_SIZE = 20  # Increased size for a better hitbox detection around the crosshair
-PIXEL_THRESHOLD = 3 # How many yellow pixels need to be seen to trigger "TRUE"
-TRIGGER_KEY_CODE = 0x31
+PIXEL_THRESHOLD = 3  # How many yellow pixels need to be seen to trigger "TRUE"
+TRIGGER_KEY_CODE = 0x30
 MOUSEEVENTF_LEFTDOWN = 0x0002
 MOUSEEVENTF_LEFTUP = 0x0004
 KEYEVENTF_SCANCODE = 0x0008
@@ -22,6 +22,8 @@ TAP_INTERVAL = 0.1
 # Note: OpenCV Hue is 0-179, Saturation 0-255, Value 0-255
 LOWER_YELLOW = np.array([25, 100, 100])
 UPPER_YELLOW = np.array([35, 255, 255])
+
+
 # ---------------------
 
 def click_mouse():
@@ -38,20 +40,23 @@ def click_mouse():
     time.sleep(0.01)
     ctypes.windll.user32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
 
+
 def press_key(hexKeyCode):
     # '0' key hardware scan code is 0x0B
     scan_code = 0x0B
 
     # --- TAP 1 ---
-    ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE, 0) # Down
-    time.sleep(0.02) # Micro-delay (20ms) so the game registers the press
-    ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP, 0) # Up
+    ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE, 0)  # Down
+    time.sleep(0.02)  # Micro-delay (20ms) so the game registers the press
+    ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP, 0)  # Up
 
     # --- TAP 2 ---
-    time.sleep(0.01) # Tiny gap so the game sees two separate clicks
-    ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE, 0) # Down
+    time.sleep(0.01)  # Tiny gap so the game sees two separate clicks
+    ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE, 0)  # Down
     time.sleep(0.02)
-    ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP, 0) # Up
+    ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP, 0)  # Up
+
+
 # --- OVERLAY SETUP ---
 root = tk.Tk()
 root.attributes("-topmost", True)
@@ -102,6 +107,7 @@ region = {
     "height": SCAN_SIZE
 }
 
+
 def update():
     if keyboard.is_pressed('f4'):  # Hold F4 to close the script
         root.destroy()
@@ -129,6 +135,7 @@ def update():
 
     # Loop again as fast as tkinter allows (1ms delay)
     root.after(1, update)
+
 
 # Start loop
 update()
