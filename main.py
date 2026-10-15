@@ -5,6 +5,7 @@ import tkinter as tk
 import ctypes
 import time
 import keyboard
+import winsound
 
 # Fix UI scaling issues
 ctypes.windll.shcore.SetProcessDpiAwareness(1)
@@ -18,6 +19,8 @@ MOUSEEVENTF_LEFTUP = 0x0004
 KEYEVENTF_SCANCODE = 0x0008
 KEYEVENTF_KEYUP = 0x0002
 TAP_INTERVAL = 0.1
+last_beep_time = 0
+BEEP_DELAY = 1.0
 # Standard Valorant Yellow (Deuteranopia) Enemy Highlight HSV ranges
 # Note: OpenCV Hue is 0-179, Saturation 0-255, Value 0-255
 LOWER_YELLOW = np.array([25, 100, 100])
@@ -55,6 +58,9 @@ def press_key(hexKeyCode):
     ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE, 0)  # Down
     time.sleep(0.02)
     ctypes.windll.user32.keybd_event(0, scan_code, KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP, 0)  # Up
+
+def make_noise():
+    winsound.Beep(1000, 100)
 
 
 # --- OVERLAY SETUP ---
@@ -109,6 +115,7 @@ region = {
 
 
 def update():
+    global last_beep_time
     if keyboard.is_pressed('f4'):  # Hold F4 to close the script
         root.destroy()
         return
@@ -128,7 +135,11 @@ def update():
     if matching_pixels >= PIXEL_THRESHOLD:
         canvas.itemconfig(status_text, text=f"TRUE ({matching_pixels})", fill="green")
         canvas.itemconfig(scan_box, outline="green")
-        press_key(TRIGGER_KEY_CODE)
+        # press_key(TRIGGER_KEY_CODE)
+        current_time = time.time()
+        if current_time - last_beep_time >= BEEP_DELAY:
+            make_noise()
+            last_beep_time = current_time
     else:
         canvas.itemconfig(status_text, text=f"FALSE ({matching_pixels})", fill="red")
         canvas.itemconfig(scan_box, outline="red")
